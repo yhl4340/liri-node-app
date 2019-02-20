@@ -2,80 +2,79 @@ require('dotenv').config();
 
 //require the axios package
 var axios = require('axios');
+var fs = require('fs');
+var moment = require('moment');
+// var spotify = new Spotify(keys.spotify);
 
+// exports.spotify = {
+//     id: process.env.SPOTIFY_ID,
+//     secret: process.env.SPOTIFY_SECRET
+// }
 
-// ----what to dos/actions-----
-
-
-
-// user input from the command line.
+// user input from the command line. 
 var nodeArgv = process.argv;
 // command line arg starts at 2.
-var input= nodeArgv.slice(2);
+
+// var command = nodeArgv.slice(2);
+var input= nodeArgv.slice(2).join("");
 var queryInput = '';
 
-for ( var i = 2; i < nodeArgv.length; i ++){
-    if (i >= 2 && i < nodeArgv.length){
-        // if command line has more than 1 word, then add the + to every word from the command line inside the str
-        queryInput = queryInput + '+' + input[i];
-        }else{
-            queryInput += query;
-        }
-    };
+// omdb working, only by itsel. when put in the fx, it breaks
 
-// switch (input){
-//     case "movie-this":
-//         movieThis();
-//         break;
-// };
+// function movieThis(input){
+//     if (input === ''){
+//         input = 'mr+nobody';
+//     }
 
-// // function movieThis(){
-// //     if (movies === ''){
-// //         movies = 'Mr. Nobody';
-// //     }
+    // var url= 'http://www.omdbapi.com/?t=' + input + '&apikey=trilogy';
 
-// var url= 'http://www.omdbapi.com/?t=' + input + '&apikey=trilogy';
-   
-//     axios.get(url).then(function(res){
-//         if(input === undefined){
-//             input = 'mr+nobody';
-//         };
-//         console.log('Year: ' + res.data.Year);
-//         console.log('Title:' + res.data.Title);
-//         console.log('The imdb rating: ' + res.data.imdbRating);
-//         console.log('Country: ' + res.data.Country);
-//         console.log('Language: ' + res.data.Language);
-//         console.log('Plot: ' + res.data.Plot);
-//         console.log(res.data.Actors);
-//     });
+    // axios.get(url).then(function(res){
+        
+    //     console.log('Year: ' + res.data.Year);
+    //     console.log('Title:' + res.data.Title);
+    //     console.log('The imdb rating: ' + res.data.imdbRating);
+    //     console.log('Country: ' + res.data.Country);
+    //     console.log('Language: ' + res.data.Language);
+    //     console.log('Plot: ' + res.data.Plot);
+    //     console.log(res.data.Actors);
 
-
-
+    // });
 
  
 // //---------------BANDSINTOWN---------------
 
-// var artistStr='';
-// var argv = process.argv;
-// var artists = argv.slice(2);
 
-// for (var j= 3; j<argv.length;j++){
-//     if(j >= 3 && j < argv.length){
-// artists = artistStr + '+' + argv[i]
-//     }
-// }; 
 
 var bandUrl = 
-"https://rest.bandsintown.com/artists/" + input + "/events?app_id=codingbootcamp";
+"https://rest.bandsintown.com/artists/" + input + "/events?app_id=codingbootcamp#";
 
-axios.get(bandUrl).then(function(err,res,body){
-    if (err){
-        console.log(err + 'error occured');
-    }else{
-      console.log(res.body +'yay'); 
-    //   console.log(res.data.venue.city +'yay'); 
+axios.get(bandUrl).then(function( res){
+    
+    var jData = res.data;
+    
+    
+    for (var i = 0; i < jData.length; i ++){
+        var date = jData[i].datetime;
+        var momentDate = moment(date).format('MMM Do yy, h:mm:ss a');
+        
+        console.log('===============================');
+        console.log('Name of the venue: ' + jData[i].venue.name);
+        console.log('City of the venue: ' + jData[i].venue.city); 
+        console.log('Time of the venue: ' + momentDate);
+        console.log('---------------------------------'); 
+    }
+   
+    })
+    .catch(function(err){
+        if(err){
+            console.log(err.res.data);
+            console.log(err.res.status);
+            console.log(err.res.headers);
+        }else if (err.request){
+            console.log(err.request);
+        }else{
+            console.log("Error", err.message);
+        }
+        console.log(err.config);
+    });
 
-    };
-    
-});
-    
