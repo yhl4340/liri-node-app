@@ -8,7 +8,6 @@ var moment = require("moment");
 var Spotify = require("node-spotify-api");
 var spotify = new Spotify(keys.spotify);
 var inquirer = require("inquirer");
-var request = require("request");
 
 // // --------------------------ALL THE 'X-THIS' FUNCTIONS--------------------------------------
 
@@ -71,33 +70,32 @@ function concertThis(concert) {
     });
 }
 
-//??????????????????????/SPOTIFY-not working???????????????
 //  var base = 'https://api.spotify.com/v1/artists/99471d95db844a81a3b63d3b27d43b5e/'+ input;
 // sample for album
 //  GET https://api.spotify.com/v1/albums/
 
 function spotThis(spotTitle) {
   if (!spotTitle) {
-    spotTitle = "The+Sign";
+    spotTitle = "ace+of+base+The+Sign";
   }
   spotify
     .search({
       type: "track",
       query: spotTitle
     })
-    // .then(function(err, data) {
+    // had to comment out the 'err' because the err was actually the data needed.
     .then(function(data) {
     //   if (err) {
     //     return console.log("Error occured: " + JSON.stringify(err));
     //   }
-      
-
       var items = data.tracks.items;
       for (var i = 0; i < items.length; i++) {
+        console.log('-----------------------------------');
         console.log(items[i].artists[0].name);
         console.log(items[i].name);
         console.log(items[i].preview_url);
         console.log(items[i].album.name);
+        console.log('====================================');
       }
     });
 }
@@ -105,13 +103,10 @@ function spotThis(spotTitle) {
 function doThis() {
   fs.readFile("random.txt", "utf8", function(err, data) {
     var dataArr = data.split(",");
-    console.log("dataArr:" + JSON.stringify(dataArr));
+    // console.log("dataArr:" + JSON.stringify(dataArr));
     if (err) {
       console.log(err);
     } else {
-      console.log("****************************");
-      // console.log(dataArr);
-      console.log("===========================");
       run(dataArr[0], dataArr[1]);
     }
   });
@@ -148,7 +143,6 @@ function concertSearch() {
     });
 }
 
-// //????????????????spotify not working??????????????????
 function spotSearch() {
   inquirer
     .prompt([
@@ -167,53 +161,45 @@ function spotSearch() {
 
 function doWhatItSaysSearch() {
   doThis();
-  inquirer
-    .prompt([
-      {
-        // type:'input',
-        name: "continue",
-        message: "do you want to search this movie? Y/n?"
-      }
-    ])
-    .then(function(answer) {
-      if (answer.continue === "Y" || answer.continue === "y") {
-        run();
-      }
-    });
-  // .then(function(inquirerResponse){
-  //     var searchTerm= inquirerResponse.searchTerm;
-  //     var searchTermAbbrv = searchTerm.split(',').join('') +'\n';
-  //     doThis(searchTermAbbrv);
-  // })
 }
 
 // // ----------------SWITCH STATEMENT-------------
 function run(command, data) {
-  console.log(command);
-  console.log(data);
   switch (command) {
     case "movie-this":
-      console.log("data:" + data);
+    //   if there is data passed in, then use the data
       if (data) {
         movieThis(data);
       } else {
         movieSearch();
       }
       break;
-    case "concert-this":
-      concertSearch(data);
+
+    case "concert-this": 
+      if(data){ 
+        console.log("data:" + data);
+         concertThis(data);
+      }else {
+           concertSearch();
+      }
       break;
+
     case "spotify-this-song":
-      spotSearch(data);
+      if(data){
+          spotThis(data);
+      } else {
+        spotSearch();
+      }
       break;
+
     case "do-what-it-says":
       doWhatItSaysSearch();
       break;
+
     default:
       break;
   }
 }
-
 // using the inquirer package to prompt user on page load. create an obj with questions
 inquirer
   .prompt([
