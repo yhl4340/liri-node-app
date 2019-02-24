@@ -47,7 +47,7 @@ function concertThis(concert) {
       var jData = res.data;
       for (var i = 0; i < jData.length; i++) {
         var date = jData[i].datetime;
-        var momentDate = moment(date).format("MMM Do yy, h:mm:ss a");
+        var momentDate = moment(date).format("MMM Do YYYY, h:mm:ss a");
 
         console.log("===============================");
         console.log("Name of the venue: " + jData[i].venue.name);
